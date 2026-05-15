@@ -131,7 +131,7 @@ def export_orders(
     wb = openpyxl.Workbook()
     ws = wb.active
     ws.title = "订单导出"
-    headers = ["订单ID", "学员", "时间", "ASIN", "渠道", "追踪号", "毛重", "运费", "服务费", "打包费", "总费用", "结余", "状态"]
+    headers = ["订单ID", "学员", "时间", "ASIN", "渠道", "追踪号", "毛重", "运费", "服务费", "打包费", "总费用", "净销售额", "状态"]
     ws.append(headers)
 
     for o in orders:

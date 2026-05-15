@@ -180,8 +180,14 @@ function LogisticsUpload() {
     if (!preview) return;
     setConfirming(true);
     try {
-      const matchedIds = preview.matched.map((m: any) => m.order_id);
-      const res = await confirmLogistics(matchedIds);
+      const matchedItems = preview.matched.map((m: any) => ({
+        order_id: m.order_id,
+        weight: m.weight,
+        logistics_fee: m.logistics_fee,
+        service_fee: m.service_fee,
+        packing_fee: m.packing_fee,
+      }));
+      const res = await confirmLogistics(matchedItems);
       message.success(`更新完成: ${res.updated_rows} 条`);
       setPreview(null);
       setFile(null);
@@ -230,6 +236,9 @@ function LogisticsUpload() {
               { title: '物流ID', dataIndex: 'logistics_id', width: 100 },
               { title: '订单ID', dataIndex: 'erp_order_id', width: 100 },
               { title: '重量(g)', dataIndex: 'weight', width: 80 },
+              { title: '运费', dataIndex: 'logistics_fee', width: 80, render: (v: number) => `¥${v.toFixed(2)}` },
+              { title: '服务费', dataIndex: 'service_fee', width: 80, render: (v: number) => `¥${v.toFixed(2)}` },
+              { title: '打包费', dataIndex: 'packing_fee', width: 80, render: (v: number) => `¥${v.toFixed(2)}` },
             ]}
             rowKey="logistics_id"
             size="small"

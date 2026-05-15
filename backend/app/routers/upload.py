@@ -224,6 +224,12 @@ def upload_logistics(
                 "erp_order_id": order.erp_order_id,
                 "weight": parsed["weight"],
                 "current_gross_weight": float(order.gross_weight),
+                "logistics_fee": parsed["logistics_fee"],
+                "current_freight": float(order.freight),
+                "service_fee": parsed["service_fee"],
+                "current_service_fee": float(order.service_fee),
+                "packing_fee": parsed["packing_fee"],
+                "current_packing_fee": float(order.packing_fee),
                 "channel_name": parsed["channel_name"],
                 "tracking_no": parsed["tracking_no"],
             })
@@ -242,7 +248,7 @@ def upload_logistics(
 
 @router.post("/logistics/confirm")
 def confirm_logistics(
-    matched_ids: list[int],
+    matched_items: list[dict],
     db: Session = Depends(get_db),
     _: User = Depends(require_admin),
 ):
@@ -250,16 +256,29 @@ def confirm_logistics(
     batch = ImportBatch(
         file_type="logistics",
         file_name="logistics_import",
-        total_rows=len(matched_ids),
+        total_rows=len(matched_items),
         success_rows=0,
         skip_rows=0,
     )
     db.add(batch)
     db.flush()
 
-    for order_id in matched_ids:
+    for item in matched_items:
+        order_id = item.get("order_id")
         order = db.query(Order).filter(Order.id == order_id).first()
         if order:
+            # 更新订单的毛重、运费、服务费、打包费
+            if item.get("weight") is not None:
+                order.gross_weight = item["weight"]
+            if item.get("logistics_fee") is not None:
+                order.freight = item["logistics_fee"]
+            if item.get("service_fee") is not None:
+                order.service_fee = item["service_fee"]
+            if item.get("packing_fee") is not None:
+                order.packing_fee = item["packing_fee"]
+            
+            # 重新计算总费用
+            order.total_cost = (order.freight or 0) + (order.service_fee or 0) + (order.packing_fee or 0)
             updated += 1
 
     batch.success_rows = updated

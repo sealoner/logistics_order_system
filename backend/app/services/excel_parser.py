@@ -30,8 +30,15 @@ def parse_erp_row(row_data: dict[str, Any]) -> dict[str, Any]:
             balance_amount = None
 
     freight = _safe_float(row_data.get("运费"))
-    service_fee = _safe_float(row_data.get("服务费"))
-    packing_fee = _safe_float(row_data.get("打包费"))
+    
+    # 如果运费为0，则服务费和打包费都设为0
+    if freight == 0:
+        service_fee = 0.0
+        packing_fee = 0.0
+    else:
+        service_fee = _safe_float(row_data.get("服务费"))
+        packing_fee = _safe_float(row_data.get("打包费"))
+    
     total_cost = freight + service_fee + packing_fee
 
     return {
