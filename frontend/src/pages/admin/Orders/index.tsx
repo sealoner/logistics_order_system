@@ -48,7 +48,7 @@ export default function OrdersPage() {
       if (filters.end_date) params.append('end_date', filters.end_date);
       if (filters.search && filters.search.trim()) params.append('search', filters.search.trim());
       
-      const response = await client.get(`/orders/export-test?${params.toString()}`, {
+      const response = await client.get(`/orders/export?${params.toString()}`, {
         responseType: 'blob',
       });
       
