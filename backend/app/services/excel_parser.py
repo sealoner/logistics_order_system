@@ -29,17 +29,18 @@ def parse_erp_row(row_data: dict[str, Any]) -> dict[str, Any]:
         except (ValueError, TypeError):
             balance_amount = None
 
-    freight = _safe_float(row_data.get("运费"))
+    freight = _safe_float_optional(row_data.get("运费"))
     
-    # 如果运费为0，则服务费和打包费都设为0
-    if freight == 0:
-        service_fee = 0.0
-        packing_fee = 0.0
+    # 如果运费为0或者空，则服务费和打包费默认也为空
+    if freight is None or freight == 0:
+        service_fee = None
+        packing_fee = None
     else:
-        service_fee = _safe_float(row_data.get("服务费"))
-        packing_fee = _safe_float(row_data.get("打包费"))
+        # 如果运费不为0或者空，则服务费默认为0，打包费默认为3元
+        service_fee = 0.0
+        packing_fee = 3.0
     
-    total_cost = freight + service_fee + packing_fee
+    total_cost = (freight or 0) + (service_fee or 0) + (packing_fee or 0)
 
     return {
         "erp_order_id": _safe_int(row_data.get("id")),
@@ -105,6 +106,15 @@ def _safe_float(val: Any) -> float:
         return float(val)
     except (ValueError, TypeError):
         return 0.0
+
+
+def _safe_float_optional(val: Any) -> Optional[float]:
+    if val is None:
+        return None
+    try:
+        return float(val)
+    except (ValueError, TypeError):
+        return None
 
 
 def _safe_int(val: Any) -> int:

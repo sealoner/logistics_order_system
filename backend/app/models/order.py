@@ -10,7 +10,7 @@ class Order(Base):
     __tablename__ = "orders"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    erp_order_id: Mapped[int] = mapped_column(BigInteger, unique=True, nullable=False)
+    erp_order_id: Mapped[int] = mapped_column(BigInteger, nullable=False)
     student_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
     order_time: Mapped[Optional[datetime]] = mapped_column(DateTime)
     source: Mapped[Optional[str]] = mapped_column(String(100))

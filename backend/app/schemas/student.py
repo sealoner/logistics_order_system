@@ -27,6 +27,9 @@ class StudentResponse(BaseModel):
     is_active: bool
     created_at: datetime
     order_count: int = 0
+    total_freight: float = 0.0
+    total_recharged: float = 0.0
+    freight_balance: float = 0.0
 
     class Config:
         from_attributes = True

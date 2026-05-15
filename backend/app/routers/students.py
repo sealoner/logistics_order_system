@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
+from datetime import datetime
 from sqlalchemy import func
 
 from app.database import get_db
@@ -38,10 +39,19 @@ def list_students(
     result = []
     for s in students:
         order_count = db.query(func.count(Order.id)).filter(Order.student_id == s.id).scalar()
+        total_freight = db.query(func.sum(Order.total_cost)).filter(Order.student_id == s.id).scalar() or 0
+        total_recharged = db.query(func.sum(RechargeRecord.amount)).filter(
+            RechargeRecord.student_id == s.id,
+            RechargeRecord.is_canceled == False
+        ).scalar() or 0
+        freight_balance = float(total_recharged) - float(total_freight)
         result.append(StudentResponse(
             id=s.id, name=s.name, username=s.username, role=s.role,
             phone=s.phone, remark=s.remark, balance=float(s.balance),
             is_active=s.is_active, created_at=s.created_at, order_count=order_count or 0,
+            total_freight=float(total_freight),
+            total_recharged=float(total_recharged),
+            freight_balance=freight_balance,
         ))
 
     return {"total": total, "page": page, "page_size": page_size, "items": result}
@@ -85,10 +95,19 @@ def get_student(
     if not student:
         raise HTTPException(status_code=404, detail="学员不存在")
     order_count = db.query(func.count(Order.id)).filter(Order.student_id == student.id).scalar()
+    total_freight = db.query(func.sum(Order.total_cost)).filter(Order.student_id == student.id).scalar() or 0
+    total_recharged = db.query(func.sum(RechargeRecord.amount)).filter(
+        RechargeRecord.student_id == student.id,
+        RechargeRecord.is_canceled == False
+    ).scalar() or 0
+    freight_balance = float(total_recharged) - float(total_freight)
     return StudentResponse(
         id=student.id, name=student.name, username=student.username, role=student.role,
         phone=student.phone, remark=student.remark, balance=float(student.balance),
         is_active=student.is_active, created_at=student.created_at, order_count=order_count or 0,
+        total_freight=float(total_freight),
+        total_recharged=float(total_recharged),
+        freight_balance=freight_balance,
     )
 
 
@@ -172,6 +191,37 @@ def get_recharges(
     total = query.count()
     records = query.order_by(RechargeRecord.created_at.desc()).offset((page - 1) * page_size).limit(page_size).all()
     return {"total": total, "page": page, "page_size": page_size, "items": records}
+
+
+@router.post("/{student_id}/recharges/{recharge_id}/cancel")
+def cancel_recharge(
+    student_id: int,
+    recharge_id: int,
+    db: Session = Depends(get_db),
+    _: User = Depends(require_admin),
+):
+    recharge = db.query(RechargeRecord).filter(
+        RechargeRecord.id == recharge_id,
+        RechargeRecord.student_id == student_id
+    ).first()
+    
+    if not recharge:
+        raise HTTPException(status_code=404, detail="充值记录不存在")
+    
+    if recharge.is_canceled:
+        raise HTTPException(status_code=400, detail="该充值记录已作废")
+    
+    student = db.query(User).filter(User.id == student_id).first()
+    if not student:
+        raise HTTPException(status_code=404, detail="学员不存在")
+    
+    student.balance = float(student.balance) - float(recharge.amount)
+    recharge.is_canceled = True
+    recharge.canceled_at = datetime.now()
+    
+    db.commit()
+    
+    return {"message": "充值记录已作废，余额已回滚", "new_balance": float(student.balance)}
 
 
 @router.get("/{student_id}/deductions")

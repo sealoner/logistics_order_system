@@ -51,14 +51,23 @@ function ErpUpload() {
       setPreview(null);
       setFile(null);
     } catch (e: any) {
-      message.error(e.response?.data?.detail || '确认导入失败');
+      const errorDetail = e.response?.data?.detail;
+      let errorMessage = '确认导入失败';
+      if (errorDetail) {
+        if (Array.isArray(errorDetail)) {
+          errorMessage = errorDetail.map((err: any) => err.msg || JSON.stringify(err)).join(', ');
+        } else if (typeof errorDetail === 'string') {
+          errorMessage = errorDetail;
+        }
+      }
+      message.error(errorMessage);
     } finally {
       setConfirming(false);
     }
   };
 
   return (
-    <Card title="ERP 文件上传" bordered={false}>
+    <Card title="ERP 文件上传" variant="outlined">
       <Dragger
         beforeUpload={(f) => { setFile(f); return false; }}
         maxCount={1}
@@ -85,7 +94,7 @@ function ErpUpload() {
       {preview && (
         <div style={{ marginTop: 16 }}>
           <Alert
-            message={`共 ${preview.summary.total_rows} 条, 新增 ${preview.summary.new_rows} 条, 重复 ${preview.summary.duplicate_rows} 条`}
+            title={`共 ${preview.summary.total_rows} 条, 新增 ${preview.summary.new_rows} 条, 重复 ${preview.summary.duplicate_rows} 条`}
             type="info"
             style={{ marginBottom: 12 }}
           />
@@ -131,27 +140,22 @@ function ErpUpload() {
         open={showDupModal}
         onCancel={() => setShowDupModal(false)}
         footer={null}
-        width={700}
+        width={500}
       >
-        {preview?.duplicates?.map((dup: any) => (
-          <Card key={dup.erp_order_id} size="small" style={{ marginBottom: 8 }}>
-            <p><strong>订单ID: {dup.erp_order_id}</strong> — 差异字段: {dup.diff_fields.join(', ')}</p>
-            <Select
-              style={{ width: '100%' }}
-              placeholder="选择处理方式"
-              value={duplicateDecisions[dup.erp_order_id]}
-              onChange={(v) => setDuplicateDecisions((prev) => ({ ...prev, [dup.erp_order_id]: v }))}
-              options={[
-                { value: 'keep_old', label: '保留旧数据' },
-                { value: 'replace', label: '替换为新数据' },
-                { value: 'merge', label: '智能合并（新数据补充空字段）' },
-              ]}
-            />
-          </Card>
-        ))}
-        <Button type="primary" block onClick={() => setShowDupModal(false)} style={{ marginTop: 8 }}>
+        <Button type="primary" block onClick={() => setShowDupModal(false)} style={{ marginBottom: 16 }}>
           确认处理
         </Button>
+        
+        <Alert
+          title={`检测到 ${preview?.duplicates?.length || 0} 条重复订单`}
+          description="默认处理方式：智能合并（新数据补充空字段）"
+          type="info"
+          showIcon
+        />
+        
+        <p style={{ marginTop: 16, color: '#666' }}>
+          系统将自动使用"智能合并"方式处理所有重复订单，即新数据会补充到旧数据的空字段中。
+        </p>
       </Modal>
     </Card>
   );
@@ -181,25 +185,37 @@ function LogisticsUpload() {
     setConfirming(true);
     try {
       const matchedItems = preview.matched.map((m: any) => ({
+        logistics_id: String(m.logistics_id),
         order_id: m.order_id,
         weight: m.weight,
         logistics_fee: m.logistics_fee,
         service_fee: m.service_fee,
         packing_fee: m.packing_fee,
+        channel_name: m.channel_name || "",
+        tracking_no: m.tracking_no || "",
       }));
       const res = await confirmLogistics(matchedItems);
       message.success(`更新完成: ${res.updated_rows} 条`);
       setPreview(null);
       setFile(null);
     } catch (e: any) {
-      message.error(e.response?.data?.detail || '确认失败');
+      const errorDetail = e.response?.data?.detail;
+      let errorMessage = '确认失败';
+      if (errorDetail) {
+        if (Array.isArray(errorDetail)) {
+          errorMessage = errorDetail.map((err: any) => err.msg || JSON.stringify(err)).join(', ');
+        } else if (typeof errorDetail === 'string') {
+          errorMessage = errorDetail;
+        }
+      }
+      message.error(errorMessage);
     } finally {
       setConfirming(false);
     }
   };
 
   return (
-    <Card title="物流明细上传" bordered={false}>
+    <Card title="物流明细上传" variant="outlined">
       <Dragger
         beforeUpload={(f) => { setFile(f); return false; }}
         maxCount={1}
@@ -226,7 +242,7 @@ function LogisticsUpload() {
       {preview && (
         <div style={{ marginTop: 16 }}>
           <Alert
-            message={`共 ${preview.summary.total} 条, 匹配 ${preview.summary.matched} 条, 未匹配 ${preview.summary.unmatched} 条`}
+            title={`共 ${preview.summary.total} 条, 匹配 ${preview.summary.matched} 条, 未匹配 ${preview.summary.unmatched} 条`}
             type={preview.summary.unmatched > 0 ? 'warning' : 'success'}
             style={{ marginBottom: 12 }}
           />

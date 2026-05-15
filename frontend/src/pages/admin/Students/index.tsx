@@ -31,10 +31,12 @@ export default function StudentsPage() {
     { title: '姓名', dataIndex: 'name', key: 'name' },
     { title: '账号', dataIndex: 'username', key: 'username' },
     { title: '手机号', dataIndex: 'phone', key: 'phone', render: (v: string) => v || '-' },
+    { title: '运费总额', dataIndex: 'total_freight', key: 'total_freight', render: (v: number) => `¥${v.toFixed(2)}` },
+    { title: '已充值运费', dataIndex: 'total_recharged', key: 'total_recharged', render: (v: number) => `¥${v.toFixed(2)}` },
     {
-      title: '运费余额', dataIndex: 'balance', key: 'balance',
+      title: '运费余额', dataIndex: 'freight_balance', key: 'freight_balance',
       render: (v: number) => (
-        <Tag color={v < 50 ? 'red' : 'green'}>¥{v.toFixed(2)}</Tag>
+        <Tag color={v < 0 ? 'red' : 'green'}>¥{v.toFixed(2)}</Tag>
       ),
     },
     { title: '订单数', dataIndex: 'order_count', key: 'order_count' },

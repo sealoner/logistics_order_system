@@ -11,6 +11,9 @@ export interface StudentItem {
   is_active: boolean;
   created_at: string;
   order_count: number;
+  total_freight: number;
+  total_recharged: number;
+  freight_balance: number;
 }
 
 export async function getStudents(params: { page?: number; page_size?: number; search?: string }) {
@@ -50,5 +53,10 @@ export async function getRecharges(id: number, page = 1, pageSize = 20) {
 
 export async function getDeductions(id: number, page = 1, pageSize = 20) {
   const { data } = await client.get(`/students/${id}/deductions`, { params: { page, page_size: pageSize } });
+  return data;
+}
+
+export async function cancelRecharge(studentId: number, rechargeId: number) {
+  const { data } = await client.post(`/students/${studentId}/recharges/${rechargeId}/cancel`);
   return data;
 }

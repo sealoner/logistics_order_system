@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Card, Descriptions, Tabs, Table, Tag, Spin } from 'antd';
-import { getStudent, getRecharges, getDeductions } from '../../../api/students';
+import { Card, Descriptions, Tabs, Table, Tag, Spin, Button, Popconfirm, message } from 'antd';
+import { getStudent, getRecharges, getDeductions, cancelRecharge } from '../../../api/students';
 import { getOrders } from '../../../api/orders';
 
 export default function StudentDetailPage() {
@@ -55,14 +55,61 @@ function RechargeTab({ studentId }: { studentId: number }) {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => { setLoading(true); getRecharges(studentId).then(res => setData(res.items)).finally(() => setLoading(false)); }, [studentId]);
+  const loadData = () => {
+    setLoading(true);
+    getRecharges(studentId).then(res => setData(res.items)).finally(() => setLoading(false));
+  };
+
+  useEffect(() => { loadData(); }, [studentId]);
+
+  const handleCancel = async (record: any) => {
+    try {
+      await cancelRecharge(studentId, record.id);
+      message.success('充值记录已作废');
+      loadData();
+    } catch (e: any) {
+      message.error(e.response?.data?.detail || '作废失败');
+    }
+  };
 
   const columns = [
     { title: '时间', dataIndex: 'created_at', key: 'created_at', render: (v: string) => new Date(v).toLocaleString() },
-    { title: '金额', dataIndex: 'amount', key: 'amount', render: (v: number) => <span style={{ color: '#52c41a' }}>+¥{v.toFixed(2)}</span> },
+    { 
+      title: '金额', 
+      dataIndex: 'amount', 
+      key: 'amount', 
+      render: (v: number, record: any) => (
+        <span style={{ color: record.is_canceled ? '#999' : '#52c41a', textDecoration: record.is_canceled ? 'line-through' : 'none' }}>
+          +¥{v.toFixed(2)}
+        </span>
+      ),
+    },
     { title: '充值前', dataIndex: 'balance_before', key: 'balance_before', render: (v: number) => `¥${v.toFixed(2)}` },
     { title: '充值后', dataIndex: 'balance_after', key: 'balance_after', render: (v: number) => `¥${v.toFixed(2)}` },
     { title: '备注', dataIndex: 'remark', key: 'remark', render: (v: string) => v || '-' },
+    { 
+      title: '状态', 
+      dataIndex: 'is_canceled', 
+      key: 'is_canceled',
+      render: (v: boolean) => v ? <Tag color="default">已作废</Tag> : <Tag color="green">有效</Tag>,
+    },
+    {
+      title: '操作',
+      key: 'actions',
+      render: (_: unknown, record: any) => (
+        record.is_canceled ? (
+          <span style={{ color: '#999' }}>已作废</span>
+        ) : (
+          <Popconfirm
+            title="确认作废此充值记录？"
+            description="作废后将回滚学员余额"
+            onConfirm={() => handleCancel(record)}
+          >
+            <Button size="small" danger>作废</Button>
+          </Popconfirm>
+        )
+      ),
+    },
   ];
 
   return <Table dataSource={data} columns={columns} rowKey="id" loading={loading} pagination={{ pageSize: 10 }} />;

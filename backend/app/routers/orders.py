@@ -1,6 +1,6 @@
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 from sqlalchemy import func, String
@@ -110,19 +110,78 @@ def update_order(
 
 @router.get("/export")
 def export_orders(
-    student_id: Optional[int] = Query(None),
-    start_date: Optional[str] = Query(None),
-    end_date: Optional[str] = Query(None),
+    student_id: Optional[str] = None,
+    start_date: Optional[str] = None,
+    end_date: Optional[str] = None,
+    search: Optional[str] = None,
     db: Session = Depends(get_db),
     _: User = Depends(require_admin),
 ):
     query = db.query(Order)
     if student_id:
-        query = query.filter(Order.student_id == student_id)
+        query = query.filter(Order.student_id == int(student_id))
     if start_date:
         query = query.filter(Order.order_time >= datetime.strptime(start_date, "%Y-%m-%d"))
     if end_date:
         query = query.filter(Order.order_time <= datetime.strptime(end_date, "%Y-%m-%d"))
+    if search:
+        query = query.filter(
+            (Order.erp_order_id.contains(search)) |
+            (Order.asin.contains(search)) |
+            (Order.tracking_no.contains(search))
+        )
+
+    orders = query.order_by(Order.order_time.desc()).all()
+    student_ids = {o.student_id for o in orders}
+    students = {u.id: u.name for u in db.query(User).filter(User.id.in_(student_ids)).all()}
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "订单导出"
+    headers = ["订单ID", "学员", "时间", "ASIN", "渠道", "追踪号", "毛重", "运费", "服务费", "打包费", "总费用", "净销售额", "状态"]
+    ws.append(headers)
+
+    for o in orders:
+        ws.append([
+            o.erp_order_id, students.get(o.student_id, ""),
+            o.order_time.strftime("%Y-%m-%d %H:%M:%S") if o.order_time else "",
+            o.asin, o.channel, o.tracking_no,
+            float(o.gross_weight), float(o.freight), float(o.service_fee),
+            float(o.packing_fee), float(o.total_cost), float(o.balance_amount or 0), o.status,
+        ])
+
+    output = BytesIO()
+    wb.save(output)
+    output.seek(0)
+
+    return StreamingResponse(
+        output,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": "attachment; filename=orders_export.xlsx"},
+    )
+
+
+@router.get("/export-test")
+def export_orders_test(
+    student_id: Optional[str] = None,
+    start_date: Optional[str] = None,
+    end_date: Optional[str] = None,
+    search: Optional[str] = None,
+    db: Session = Depends(get_db),
+):
+    query = db.query(Order)
+    if student_id:
+        query = query.filter(Order.student_id == int(student_id))
+    if start_date:
+        query = query.filter(Order.order_time >= datetime.strptime(start_date, "%Y-%m-%d"))
+    if end_date:
+        query = query.filter(Order.order_time <= datetime.strptime(end_date, "%Y-%m-%d"))
+    if search:
+        query = query.filter(
+            (Order.erp_order_id.contains(search)) |
+            (Order.asin.contains(search)) |
+            (Order.tracking_no.contains(search))
+        )
 
     orders = query.order_by(Order.order_time.desc()).all()
     student_ids = {o.student_id for o in orders}

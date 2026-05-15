@@ -51,11 +51,14 @@ class ErpConfirmRequest(BaseModel):
 
 
 class LogisticsConfirmItem(BaseModel):
+    logistics_id: str
     order_id: int
     weight: Optional[float] = None
     logistics_fee: Optional[float] = None
     service_fee: Optional[float] = None
     packing_fee: Optional[float] = None
+    channel_name: Optional[str] = ""
+    tracking_no: Optional[str] = ""
 
 
 class LogisticsPreviewResponse(BaseModel):

@@ -156,6 +156,7 @@ def confirm_erp(
         existing_order = db.query(Order).filter(Order.erp_order_id == erp_id).first()
 
         if existing_order:
+            # 默认使用智能合并处理重复订单
             if decision == "keep_old":
                 skip += 1
                 continue
@@ -163,7 +164,7 @@ def confirm_erp(
                 _apply_order_data(existing_order, row_data)
                 db.flush()
                 success += 1
-            elif decision == "merge":
+            else:  # 默认使用智能合并
                 _merge_order_data(existing_order, row_data)
                 db.flush()
                 success += 1
@@ -209,6 +210,13 @@ def upload_logistics(
 
     existing_order_ids = {o.erp_order_id: o for o in db.query(Order).all()}
 
+    # 统计每个物流ID出现的次数
+    logistics_id_counts = {}
+    for row in rows:
+        parsed = parse_logistics_row(row)
+        lid = parsed["logistics_id"]
+        logistics_id_counts[lid] = logistics_id_counts.get(lid, 0) + 1
+
     matched = []
     unmatched = []
 
@@ -232,6 +240,7 @@ def upload_logistics(
                 "current_packing_fee": float(order.packing_fee),
                 "channel_name": parsed["channel_name"],
                 "tracking_no": parsed["tracking_no"],
+                "duplicate_count": logistics_id_counts[lid],
             })
         else:
             unmatched.append({
@@ -253,6 +262,7 @@ def confirm_logistics(
     _: User = Depends(require_admin),
 ):
     updated = 0
+    created = 0
     batch = ImportBatch(
         file_type="logistics",
         file_name="logistics_import",
@@ -263,27 +273,68 @@ def confirm_logistics(
     db.add(batch)
     db.flush()
 
+    # 按物流ID分组
+    grouped_by_lid = {}
     for item in matched_items:
-        order = db.query(Order).filter(Order.id == item.order_id).first()
-        if order:
-            # 更新订单的毛重、运费、服务费、打包费
-            if item.weight is not None:
-                order.gross_weight = item.weight
-            if item.logistics_fee is not None:
-                order.freight = item.logistics_fee
-            if item.service_fee is not None:
-                order.service_fee = item.service_fee
-            if item.packing_fee is not None:
-                order.packing_fee = item.packing_fee
-            
-            # 重新计算总费用
-            order.total_cost = (order.freight or 0) + (order.service_fee or 0) + (order.packing_fee or 0)
-            updated += 1
+        if item.logistics_id not in grouped_by_lid:
+            grouped_by_lid[item.logistics_id] = []
+        grouped_by_lid[item.logistics_id].append(item)
 
-    batch.success_rows = updated
+    for lid, items in grouped_by_lid.items():
+        # 获取原始订单
+        original_order = db.query(Order).filter(Order.id == items[0].order_id).first()
+        if not original_order:
+            continue
+
+        # 计算平均净销售额
+        original_balance = float(original_order.balance_amount or 0)
+        item_count = len(items)
+        avg_balance = round(original_balance / item_count, 2)
+
+        # 处理第一条数据（更新现有订单）
+        first_item = items[0]
+        if first_item.weight is not None:
+            original_order.gross_weight = first_item.weight
+        if first_item.logistics_fee is not None:
+            original_order.freight = first_item.logistics_fee
+        if first_item.service_fee is not None:
+            original_order.service_fee = first_item.service_fee
+        if first_item.packing_fee is not None:
+            original_order.packing_fee = first_item.packing_fee
+        if first_item.channel_name:
+            original_order.channel = first_item.channel_name
+        if first_item.tracking_no:
+            original_order.tracking_no = first_item.tracking_no
+        
+        original_order.balance_amount = avg_balance
+        original_order.total_cost = (original_order.freight or 0) + (original_order.service_fee or 0) + (original_order.packing_fee or 0)
+        updated += 1
+
+        # 处理剩余的数据（创建新订单）
+        for item in items[1:]:
+            new_order = Order(
+                erp_order_id=original_order.erp_order_id,
+                student_id=original_order.student_id,
+                asin=original_order.asin,
+                order_time=original_order.order_time,
+                gross_weight=item.weight or original_order.gross_weight,
+                freight=item.logistics_fee or 0,
+                service_fee=item.service_fee or 0,
+                packing_fee=item.packing_fee or 0,
+                total_cost=(item.logistics_fee or 0) + (item.service_fee or 0) + (item.packing_fee or 0),
+                balance_amount=avg_balance,
+                status=original_order.status,
+                channel=item.channel_name or original_order.channel,
+                tracking_no=item.tracking_no or original_order.tracking_no,
+                image_url=original_order.image_url,
+            )
+            db.add(new_order)
+            created += 1
+
+    batch.success_rows = updated + created
     db.commit()
 
-    return {"message": "导入完成", "updated_rows": updated}
+    return {"message": "导入完成", "updated_rows": updated, "created_rows": created}
 
 
 @router.get("/batches")
