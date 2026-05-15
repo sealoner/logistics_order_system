@@ -1,0 +1,121 @@
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: #0a0e17;
+  position: relative;
+  overflow: hidden;
+}
+
+.login-container::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(22, 119, 255, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 80% at 0% 100%, rgba(0, 212, 255, 0.04) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 50% at 100% 50%, rgba(114, 46, 209, 0.05) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.login-container::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+}
+
+.login-card {
+  width: 420px;
+  max-width: 90vw;
+  border-radius: 20px !important;
+  box-shadow:
+    0 0 0 1px rgba(22, 119, 255, 0.12),
+    0 4px 24px rgba(0, 0, 0, 0.4),
+    0 0 80px rgba(22, 119, 255, 0.06) !important;
+  background: rgba(18, 22, 33, 0.85) !important;
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  position: relative;
+  z-index: 1;
+}
+
+.login-card .ant-card-body {
+  padding: 48px 40px 40px;
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.login-header h3 {
+  color: #e8ecf1 !important;
+  font-weight: 700 !important;
+  font-size: 24px !important;
+  letter-spacing: 0.5px;
+}
+
+.login-header p {
+  color: #5a6480 !important;
+  font-size: 13px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.login-container .ant-input-affix-wrapper {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 10px !important;
+  transition: all 0.3s ease;
+}
+
+.login-container .ant-input-affix-wrapper:hover {
+  border-color: rgba(22, 119, 255, 0.3) !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+
+.login-container .ant-input-affix-wrapper:focus-within {
+  border-color: rgba(22, 119, 255, 0.5) !important;
+  box-shadow: 0 0 0 3px rgba(22, 119, 255, 0.1) !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+
+.login-container .ant-input {
+  color: #e8ecf1 !important;
+  background: transparent !important;
+}
+
+.login-container .ant-input::placeholder {
+  color: #4a5570 !important;
+}
+
+.login-container .ant-input-prefix {
+  color: #4a5570 !important;
+}
+
+.login-container .ant-btn-primary {
+  height: 46px;
+  border-radius: 10px !important;
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: 0.5px;
+  background: linear-gradient(135deg, #1677ff 0%, #0958d9 100%) !important;
+  border: none !important;
+  box-shadow: 0 4px 16px rgba(22, 119, 255, 0.3) !important;
+  transition: all 0.3s ease;
+}
+
+.login-container .ant-btn-primary:hover {
+  box-shadow: 0 6px 24px rgba(22, 119, 255, 0.45) !important;
+  transform: translateY(-1px);
+}
+
+.login-container .ant-form-item {
+  margin-bottom: 20px;
+}

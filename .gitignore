@@ -1,0 +1,12 @@
+node_modules/
+__pycache__/
+*.pyc
+.env
+logistics.db
+.superpowers/
+dist/
+.vite/
+.DS_Store
+*.log
+.vscode/
+sucai/

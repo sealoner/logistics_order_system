@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "echarts": "^6.0.0",
+    "react-echarts": "^0.1.1"
+  }
+}
