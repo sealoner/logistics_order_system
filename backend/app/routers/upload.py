@@ -8,7 +8,7 @@ from app.database import get_db
 from app.models.user import User
 from app.models.order import Order
 from app.models.batch import ImportBatch
-from app.schemas.upload import ErpConfirmRequest, BatchResponse
+from app.schemas.upload import ErpConfirmRequest, BatchResponse, LogisticsConfirmItem
 from app.utils.auth import require_admin, hash_password
 from app.services.excel_parser import validate_fields, parse_erp_row, parse_logistics_row, read_excel_to_dicts
 from app.services.name_extractor import extract_student_name
@@ -248,7 +248,7 @@ def upload_logistics(
 
 @router.post("/logistics/confirm")
 def confirm_logistics(
-    matched_items: list[dict],
+    matched_items: list[LogisticsConfirmItem],
     db: Session = Depends(get_db),
     _: User = Depends(require_admin),
 ):
@@ -264,18 +264,17 @@ def confirm_logistics(
     db.flush()
 
     for item in matched_items:
-        order_id = item.get("order_id")
-        order = db.query(Order).filter(Order.id == order_id).first()
+        order = db.query(Order).filter(Order.id == item.order_id).first()
         if order:
             # 更新订单的毛重、运费、服务费、打包费
-            if item.get("weight") is not None:
-                order.gross_weight = item["weight"]
-            if item.get("logistics_fee") is not None:
-                order.freight = item["logistics_fee"]
-            if item.get("service_fee") is not None:
-                order.service_fee = item["service_fee"]
-            if item.get("packing_fee") is not None:
-                order.packing_fee = item["packing_fee"]
+            if item.weight is not None:
+                order.gross_weight = item.weight
+            if item.logistics_fee is not None:
+                order.freight = item.logistics_fee
+            if item.service_fee is not None:
+                order.service_fee = item.service_fee
+            if item.packing_fee is not None:
+                order.packing_fee = item.packing_fee
             
             # 重新计算总费用
             order.total_cost = (order.freight or 0) + (order.service_fee or 0) + (order.packing_fee or 0)

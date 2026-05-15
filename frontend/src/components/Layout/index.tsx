@@ -136,8 +136,8 @@ export default function AppLayout() {
         placement="left"
         open={mobileMenuOpen}
         onClose={() => setMobileMenuOpen(false)}
-        width={240}
-        bodyStyle={{ padding: 0 }}
+        size={240}
+        styles={{ body: { padding: 0 } }}
       >
         {menuNode}
       </Drawer>

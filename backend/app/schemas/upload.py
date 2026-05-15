@@ -50,6 +50,14 @@ class ErpConfirmRequest(BaseModel):
     rows_to_import: list[dict] = []
 
 
+class LogisticsConfirmItem(BaseModel):
+    order_id: int
+    weight: Optional[float] = None
+    logistics_fee: Optional[float] = None
+    service_fee: Optional[float] = None
+    packing_fee: Optional[float] = None
+
+
 class LogisticsPreviewResponse(BaseModel):
     summary: dict
     matched: list[dict]
