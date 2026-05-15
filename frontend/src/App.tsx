@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ConfigProvider, theme, App as AntApp } from 'antd';
 import zhCN from 'antd/locale/zh_CN';
 import { AuthProvider } from './contexts/AuthContext';
+import { ThemeProvider, useTheme } from './contexts/ThemeContext';
 import { ProtectedRoute, AdminRoute, StudentRoute } from './components/RouteGuard';
 import AppLayout from './components/Layout';
 import LoginPage from './pages/Login';
@@ -15,12 +16,15 @@ import StudentDashboard from './pages/student/Dashboard';
 import StudentOrders from './pages/student/Orders';
 import BillingPage from './pages/student/Billing';
 
-export default function App() {
+function AppContent() {
+  const { theme: currentTheme } = useTheme();
+
   return (
     <ConfigProvider
+      key={currentTheme}
       locale={zhCN}
       theme={{
-        algorithm: theme.darkAlgorithm,
+        algorithm: currentTheme === 'dark' ? theme.darkAlgorithm : theme.defaultAlgorithm,
         token: {
           colorPrimary: '#1677ff',
           borderRadius: 8,
@@ -53,5 +57,13 @@ export default function App() {
         </AuthProvider>
       </AntApp>
     </ConfigProvider>
+  );
+}
+
+export default function App() {
+  return (
+    <ThemeProvider>
+      <AppContent />
+    </ThemeProvider>
   );
 }

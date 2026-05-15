@@ -1,21 +1,26 @@
 .desktop-trigger { display: inline-flex; }
 .mobile-trigger { display: none; }
 
+/* 通用深色模式样式 */
+:root[data-theme="dark"] .app-layout .ant-layout-sider,
 .app-layout .ant-layout-sider {
   background: #0d1117 !important;
   border-right: 1px solid rgba(255, 255, 255, 0.06) !important;
 }
 
+:root[data-theme="dark"] .app-layout .ant-layout-sider .ant-layout-sider-trigger,
 .app-layout .ant-layout-sider .ant-layout-sider-trigger {
   background: #0d1117 !important;
   border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
 }
 
+:root[data-theme="dark"] .app-layout .ant-menu,
 .app-layout .ant-menu {
   background: transparent !important;
   border-right: none !important;
 }
 
+:root[data-theme="dark"] .app-layout .ant-menu-item,
 .app-layout .ant-menu-item {
   margin: 2px 8px !important;
   border-radius: 8px !important;
@@ -25,11 +30,13 @@
   line-height: 40px !important;
 }
 
+:root[data-theme="dark"] .app-layout .ant-menu-item:hover,
 .app-layout .ant-menu-item:hover {
   color: #e8ecf1 !important;
   background: rgba(255, 255, 255, 0.04) !important;
 }
 
+:root[data-theme="dark"] .app-layout .ant-menu-item-selected,
 .app-layout .ant-menu-item-selected {
   color: #58a6ff !important;
   background: rgba(22, 119, 255, 0.12) !important;
@@ -39,6 +46,7 @@
   font-size: 16px;
 }
 
+:root[data-theme="dark"] .app-layout .ant-layout-header,
 .app-layout .ant-layout-header {
   background: rgba(13, 17, 23, 0.85) !important;
   backdrop-filter: blur(12px) saturate(180%);
@@ -47,11 +55,13 @@
   color: #e8ecf1 !important;
 }
 
+:root[data-theme="dark"] .app-layout .ant-layout-content,
 .app-layout .ant-layout-content {
   background: #0a0e17 !important;
   min-height: calc(100vh - 64px);
 }
 
+:root[data-theme="dark"] .app-layout .ant-card,
 .app-layout .ant-card {
   background: rgba(18, 22, 33, 0.7) !important;
   border: 1px solid rgba(255, 255, 255, 0.06) !important;
@@ -59,20 +69,24 @@
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2) !important;
 }
 
+:root[data-theme="dark"] .app-layout .ant-card-head,
 .app-layout .ant-card-head {
   border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
   color: #e8ecf1 !important;
 }
 
+:root[data-theme="dark"] .app-layout .ant-card-head-title,
 .app-layout .ant-card-head-title {
   color: #e8ecf1 !important;
   font-weight: 600;
 }
 
+:root[data-theme="dark"] .app-layout .ant-table,
 .app-layout .ant-table {
   background: transparent !important;
 }
 
+:root[data-theme="dark"] .app-layout .ant-table-thead > tr > th,
 .app-layout .ant-table-thead > tr > th {
   background: rgba(255, 255, 255, 0.03) !important;
   color: #8b949e !important;
@@ -83,28 +97,34 @@
   letter-spacing: 0.5px;
 }
 
+:root[data-theme="dark"] .app-layout .ant-table-tbody > tr > td,
 .app-layout .ant-table-tbody > tr > td {
   border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
   color: #c9d1d9 !important;
 }
 
+:root[data-theme="dark"] .app-layout .ant-table-tbody > tr:hover > td,
 .app-layout .ant-table-tbody > tr:hover > td {
   background: rgba(255, 255, 255, 0.02) !important;
 }
 
+:root[data-theme="dark"] .app-layout .ant-table-pagination.ant-pagination,
 .app-layout .ant-table-pagination.ant-pagination {
   color: #8b949e;
 }
 
+:root[data-theme="dark"] .app-layout .ant-pagination-item,
 .app-layout .ant-pagination-item {
   background: rgba(255, 255, 255, 0.04) !important;
   border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
+:root[data-theme="dark"] .app-layout .ant-pagination-item a,
 .app-layout .ant-pagination-item a {
   color: #c9d1d9 !important;
 }
 
+:root[data-theme="dark"] .app-layout .ant-pagination-item-active,
 .app-layout .ant-pagination-item-active {
   background: rgba(22, 119, 255, 0.15) !important;
   border-color: rgba(22, 119, 255, 0.3) !important;
@@ -123,6 +143,8 @@
   font-weight: 500;
 }
 
+:root[data-theme="dark"] .app-layout .ant-input-affix-wrapper,
+:root[data-theme="dark"] .app-layout .ant-input,
 .app-layout .ant-input-affix-wrapper,
 .app-layout .ant-input {
   background: rgba(255, 255, 255, 0.04) !important;
@@ -131,10 +153,12 @@
   border-radius: 8px;
 }
 
+:root[data-theme="dark"] .app-layout .ant-input::placeholder,
 .app-layout .ant-input::placeholder {
   color: #4a5570 !important;
 }
 
+:root[data-theme="dark"] .app-layout .ant-select-selector,
 .app-layout .ant-select-selector {
   background: rgba(255, 255, 255, 0.04) !important;
   border-color: rgba(255, 255, 255, 0.08) !important;
@@ -142,71 +166,87 @@
   border-radius: 8px !important;
 }
 
+:root[data-theme="dark"] .app-layout .ant-select-arrow,
 .app-layout .ant-select-arrow {
   color: #8b949e !important;
 }
 
+:root[data-theme="dark"] .app-layout .ant-picker,
 .app-layout .ant-picker {
   background: rgba(255, 255, 255, 0.04) !important;
   border-color: rgba(255, 255, 255, 0.08) !important;
   border-radius: 8px;
 }
 
+:root[data-theme="dark"] .app-layout .ant-picker input,
 .app-layout .ant-picker input {
   color: #e8ecf1 !important;
 }
 
+:root[data-theme="dark"] .app-layout .ant-picker-suffix,
 .app-layout .ant-picker-suffix {
   color: #8b949e !important;
 }
 
+:root[data-theme="dark"] .app-layout .ant-modal-content,
 .app-layout .ant-modal-content {
   background: #161b25 !important;
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 14px;
 }
 
+:root[data-theme="dark"] .app-layout .ant-modal-header,
 .app-layout .ant-modal-header {
   background: transparent !important;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
+:root[data-theme="dark"] .app-layout .ant-modal-title,
 .app-layout .ant-modal-title {
   color: #e8ecf1 !important;
 }
 
+:root[data-theme="dark"] .app-layout .ant-modal-close,
 .app-layout .ant-modal-close {
   color: #8b949e !important;
 }
 
+:root[data-theme="dark"] .app-layout .ant-form-item-label > label,
 .app-layout .ant-form-item-label > label {
   color: #c9d1d9 !important;
 }
 
+:root[data-theme="dark"] .app-layout .ant-descriptions-item-label,
 .app-layout .ant-descriptions-item-label {
   color: #8b949e !important;
 }
 
+:root[data-theme="dark"] .app-layout .ant-descriptions-item-content,
 .app-layout .ant-descriptions-item-content {
   color: #e8ecf1 !important;
 }
 
+:root[data-theme="dark"] .app-layout .ant-tabs-tab,
 .app-layout .ant-tabs-tab {
   color: #8b949e !important;
 }
 
+:root[data-theme="dark"] .app-layout .ant-tabs-tab-active .ant-tabs-tab-btn,
 .app-layout .ant-tabs-tab-active .ant-tabs-tab-btn {
   color: #58a6ff !important;
 }
 
+:root[data-theme="dark"] .app-layout .ant-tabs-ink-bar,
 .app-layout .ant-tabs-ink-bar {
   background: #58a6ff !important;
 }
 
+:root[data-theme="dark"] .app-layout .ant-tabs-nav::before,
 .app-layout .ant-tabs-nav::before {
   border-bottom-color: rgba(255, 255, 255, 0.06) !important;
 }
 
+:root[data-theme="dark"] .stat-card,
 .stat-card {
   background: rgba(18, 22, 33, 0.7) !important;
   border: 1px solid rgba(255, 255, 255, 0.06) !important;
@@ -221,6 +261,7 @@
   transform: translateY(-2px);
 }
 
+:root[data-theme="dark"] .stat-card .ant-statistic-title,
 .stat-card .ant-statistic-title {
   color: #8b949e !important;
   font-size: 12px;
@@ -234,12 +275,14 @@
   font-weight: 700;
 }
 
+:root[data-theme="dark"] .sider-logo,
 .sider-logo {
   padding: 20px 16px;
   text-align: center;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
+:root[data-theme="dark"] .sider-logo h2,
 .sider-logo h2 {
   background: linear-gradient(135deg, #58a6ff 0%, #3fb950 100%);
   -webkit-background-clip: text;
@@ -248,6 +291,187 @@
   margin: 0;
   font-weight: 800;
   letter-spacing: 1px;
+}
+
+/* 浅色模式覆盖 */
+:root[data-theme="light"] .app-layout .ant-layout-sider {
+  background: #fff !important;
+  border-right: 1px solid #e5e4e7 !important;
+}
+
+:root[data-theme="light"] .app-layout .ant-layout-sider .ant-layout-sider-trigger {
+  background: #fff !important;
+  border-top: 1px solid #e5e4e7 !important;
+}
+
+:root[data-theme="light"] .app-layout .ant-menu-item {
+  color: #595959 !important;
+}
+
+:root[data-theme="light"] .app-layout .ant-menu-item:hover {
+  color: #1677ff !important;
+  background: rgba(22, 119, 255, 0.06) !important;
+}
+
+:root[data-theme="light"] .app-layout .ant-menu-item-selected {
+  color: #1677ff !important;
+  background: rgba(22, 119, 255, 0.1) !important;
+}
+
+:root[data-theme="light"] .app-layout .ant-layout-header {
+  background: #fff !important;
+  border-bottom: 1px solid #e5e4e7 !important;
+  color: #262626 !important;
+}
+
+:root[data-theme="light"] .app-layout .ant-layout-content {
+  background: #f5f5f5 !important;
+  min-height: calc(100vh - 64px);
+}
+
+:root[data-theme="light"] .app-layout .ant-card {
+  background: #fff !important;
+  border: 1px solid #e5e4e7 !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08) !important;
+}
+
+:root[data-theme="light"] .app-layout .ant-card-head {
+  border-bottom: 1px solid #e5e4e7 !important;
+  color: #262626 !important;
+}
+
+:root[data-theme="light"] .app-layout .ant-card-head-title {
+  color: #262626 !important;
+}
+
+:root[data-theme="light"] .app-layout .ant-table-thead > tr > th {
+  background: #fafafa !important;
+  color: #595959 !important;
+  border-bottom: 1px solid #e5e4e7 !important;
+}
+
+:root[data-theme="light"] .app-layout .ant-table-tbody > tr > td {
+  border-bottom: 1px solid #e5e4e7 !important;
+  color: #262626 !important;
+}
+
+:root[data-theme="light"] .app-layout .ant-table-tbody > tr:hover > td {
+  background: #f5f5f5 !important;
+}
+
+:root[data-theme="light"] .app-layout .ant-pagination-item {
+  background: #fff !important;
+  border-color: #d9d9d9 !important;
+}
+
+:root[data-theme="light"] .app-layout .ant-pagination-item a {
+  color: #595959 !important;
+}
+
+:root[data-theme="light"] .app-layout .ant-pagination-item-active {
+  background: #fff !important;
+  border-color: #1677ff !important;
+}
+
+:root[data-theme="light"] .app-layout .ant-input-affix-wrapper,
+:root[data-theme="light"] .app-layout .ant-input {
+  background: #fff !important;
+  border-color: #d9d9d9 !important;
+  color: #262626 !important;
+}
+
+:root[data-theme="light"] .app-layout .ant-input::placeholder {
+  color: #bfbfbf !important;
+}
+
+:root[data-theme="light"] .app-layout .ant-select-selector {
+  background: #fff !important;
+  border-color: #d9d9d9 !important;
+  color: #262626 !important;
+}
+
+:root[data-theme="light"] .app-layout .ant-select-arrow {
+  color: #8c8c8c !important;
+}
+
+:root[data-theme="light"] .app-layout .ant-picker {
+  background: #fff !important;
+  border-color: #d9d9d9 !important;
+}
+
+:root[data-theme="light"] .app-layout .ant-picker input {
+  color: #262626 !important;
+}
+
+:root[data-theme="light"] .app-layout .ant-picker-suffix {
+  color: #8c8c8c !important;
+}
+
+:root[data-theme="light"] .app-layout .ant-modal-content {
+  background: #fff !important;
+  border: 1px solid #e5e4e7 !important;
+}
+
+:root[data-theme="light"] .app-layout .ant-modal-header {
+  background: #fff !important;
+  border-bottom: 1px solid #e5e4e7 !important;
+}
+
+:root[data-theme="light"] .app-layout .ant-modal-title {
+  color: #262626 !important;
+}
+
+:root[data-theme="light"] .app-layout .ant-modal-close {
+  color: #8c8c8c !important;
+}
+
+:root[data-theme="light"] .app-layout .ant-form-item-label > label {
+  color: #595959 !important;
+}
+
+:root[data-theme="light"] .app-layout .ant-descriptions-item-label {
+  color: #8c8c8c !important;
+}
+
+:root[data-theme="light"] .app-layout .ant-descriptions-item-content {
+  color: #262626 !important;
+}
+
+:root[data-theme="light"] .app-layout .ant-tabs-tab {
+  color: #595959 !important;
+}
+
+:root[data-theme="light"] .app-layout .ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: #1677ff !important;
+}
+
+:root[data-theme="light"] .app-layout .ant-tabs-ink-bar {
+  background: #1677ff !important;
+}
+
+:root[data-theme="light"] .app-layout .ant-tabs-nav::before {
+  border-bottom-color: #e5e4e7 !important;
+}
+
+:root[data-theme="light"] .stat-card {
+  background: #fff !important;
+  border: 1px solid #e5e4e7 !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08) !important;
+}
+
+:root[data-theme="light"] .stat-card .ant-statistic-title {
+  color: #8c8c8c !important;
+}
+
+:root[data-theme="light"] .sider-logo {
+  border-bottom: 1px solid #e5e4e7 !important;
+}
+
+:root[data-theme="light"] .sider-logo h2 {
+  background: linear-gradient(135deg, #1677ff 0%, #52c41a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 @media (max-width: 768px) {

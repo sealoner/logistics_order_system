@@ -3,7 +3,7 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: #0a0e17;
+  background: #f5f5f5;
   position: relative;
   overflow: hidden;
 }
@@ -13,9 +13,9 @@
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(22, 119, 255, 0.08) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 80% at 0% 100%, rgba(0, 212, 255, 0.04) 0%, transparent 50%),
-    radial-gradient(ellipse 50% 50% at 100% 50%, rgba(114, 46, 209, 0.05) 0%, transparent 50%);
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(22, 119, 255, 0.04) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 80% at 0% 100%, rgba(0, 212, 255, 0.02) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 50% at 100% 50%, rgba(114, 46, 209, 0.03) 0%, transparent 50%);
   pointer-events: none;
 }
 
@@ -24,8 +24,8 @@
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    linear-gradient(rgba(0, 0, 0, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.02) 1px, transparent 1px);
   background-size: 60px 60px;
   pointer-events: none;
 }
@@ -36,13 +36,38 @@
   border-radius: 20px !important;
   box-shadow:
     0 0 0 1px rgba(22, 119, 255, 0.12),
-    0 4px 24px rgba(0, 0, 0, 0.4),
+    0 4px 24px rgba(0, 0, 0, 0.15),
     0 0 80px rgba(22, 119, 255, 0.06) !important;
-  background: rgba(18, 22, 33, 0.85) !important;
+  background: rgba(255, 255, 255, 0.95) !important;
   backdrop-filter: blur(24px) saturate(180%);
   -webkit-backdrop-filter: blur(24px) saturate(180%);
   position: relative;
   z-index: 1;
+}
+
+[data-theme="dark"] .login-container {
+  background: #0a0e17;
+}
+
+[data-theme="dark"] .login-container::before {
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(22, 119, 255, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 80% at 0% 100%, rgba(0, 212, 255, 0.04) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 50% at 100% 50%, rgba(114, 46, 209, 0.05) 0%, transparent 50%);
+}
+
+[data-theme="dark"] .login-container::after {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+}
+
+[data-theme="dark"] .login-card {
+  box-shadow:
+    0 0 0 1px rgba(22, 119, 255, 0.12),
+    0 4px 24px rgba(0, 0, 0, 0.4),
+    0 0 80px rgba(22, 119, 255, 0.06) !important;
+  background: rgba(18, 22, 33, 0.85) !important;
 }
 
 .login-card .ant-card-body {
@@ -55,47 +80,80 @@
 }
 
 .login-header h3 {
-  color: #e8ecf1 !important;
+  color: #1f1f1f !important;
   font-weight: 700 !important;
   font-size: 24px !important;
   letter-spacing: 0.5px;
 }
 
 .login-header p {
-  color: #5a6480 !important;
+  color: #8c8c8c !important;
   font-size: 13px;
   letter-spacing: 1.5px;
   text-transform: uppercase;
 }
 
 .login-container .ant-input-affix-wrapper {
-  background: rgba(255, 255, 255, 0.04) !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background: rgba(0, 0, 0, 0.03) !important;
+  border: 1px solid #d9d9d9 !important;
   border-radius: 10px !important;
   transition: all 0.3s ease;
 }
 
 .login-container .ant-input-affix-wrapper:hover {
   border-color: rgba(22, 119, 255, 0.3) !important;
-  background: rgba(255, 255, 255, 0.06) !important;
+  background: rgba(22, 119, 255, 0.03) !important;
 }
 
 .login-container .ant-input-affix-wrapper:focus-within {
   border-color: rgba(22, 119, 255, 0.5) !important;
   box-shadow: 0 0 0 3px rgba(22, 119, 255, 0.1) !important;
-  background: rgba(255, 255, 255, 0.06) !important;
+  background: rgba(22, 119, 255, 0.03) !important;
 }
 
 .login-container .ant-input {
-  color: #e8ecf1 !important;
+  color: #262626 !important;
   background: transparent !important;
 }
 
 .login-container .ant-input::placeholder {
-  color: #4a5570 !important;
+  color: #bfbfbf !important;
 }
 
 .login-container .ant-input-prefix {
+  color: #8c8c8c !important;
+}
+
+[data-theme="dark"] .login-header h3 {
+  color: #e8ecf1 !important;
+}
+
+[data-theme="dark"] .login-header p {
+  color: #5a6480 !important;
+}
+
+[data-theme="dark"] .login-container .ant-input-affix-wrapper {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+[data-theme="dark"] .login-container .ant-input-affix-wrapper:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+
+[data-theme="dark"] .login-container .ant-input-affix-wrapper:focus-within {
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+
+[data-theme="dark"] .login-container .ant-input {
+  color: #e8ecf1 !important;
+}
+
+[data-theme="dark"] .login-container .ant-input::placeholder {
+  color: #4a5570 !important;
+}
+
+[data-theme="dark"] .login-container .ant-input-prefix {
   color: #4a5570 !important;
 }
 

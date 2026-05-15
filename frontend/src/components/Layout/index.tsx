@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { Layout as AntLayout, Menu, Button, Drawer, theme } from 'antd';
+import { Layout as AntLayout, Menu, Button, Drawer, theme as antdTheme } from 'antd';
 import {
   DashboardOutlined, UserOutlined, ShoppingOutlined,
   UploadOutlined, HistoryOutlined, LogoutOutlined,
   MenuFoldOutlined, MenuUnfoldOutlined, WalletOutlined,
-  BarChartOutlined,
+  BarChartOutlined, MoonOutlined, SunOutlined,
 } from '@ant-design/icons';
 import { useAuth } from '../../contexts/AuthContext';
+import { useTheme } from '../../contexts/ThemeContext';
 import './index.css';
 
 const { Header, Sider, Content } = AntLayout;
@@ -30,9 +31,10 @@ export default function AppLayout() {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { user, logout } = useAuth();
+  const { theme: currentTheme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
-  const { token: themeToken } = theme.useToken();
+  const { token: themeToken } = antdTheme.useToken();
 
   const isAdmin = user?.role === 'admin';
   const menuItems = isAdmin ? adminMenuItems : studentMenuItems;
@@ -116,6 +118,13 @@ export default function AppLayout() {
             />
             <span style={{ fontWeight: 600 }}>{menuItems.find(i => i.key === selectedKey)?.label}</span>
           </div>
+          <Button
+            type="text"
+            icon={currentTheme === 'dark' ? <SunOutlined /> : <MoonOutlined />}
+            onClick={toggleTheme}
+            style={{ marginLeft: 'auto' }}
+            title={currentTheme === 'dark' ? '切换到浅色模式' : '切换到深色模式'}
+          />
         </Header>
 
         <Content style={{ margin: 16, minHeight: 280 }}>

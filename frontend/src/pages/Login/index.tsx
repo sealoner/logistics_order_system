@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Form, Input, Button, Card, message, Typography } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useAuth } from '../../contexts/AuthContext';
+import { useTheme } from '../../contexts/ThemeContext';
 import './index.css';
 
 const { Title } = Typography;
@@ -10,6 +11,7 @@ const { Title } = Typography;
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const { login, user } = useAuth();
+  useTheme();
   const navigate = useNavigate();
 
   if (user) {

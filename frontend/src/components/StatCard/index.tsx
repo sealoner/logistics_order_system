@@ -18,7 +18,7 @@ export default function StatCard({ title, value, prefix, suffix, color, loading 
         value={value}
         prefix={prefix}
         suffix={suffix}
-        valueStyle={{ color: color || '#58a6ff', fontWeight: 700 }}
+        valueStyle={{ color: color || '#1677ff', fontWeight: 700 }}
       />
     </Card>
   );
