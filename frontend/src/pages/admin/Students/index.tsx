@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Table, Button, Input, Space, Tag, Modal, Form, InputNumber, message, Popconfirm, Tooltip } from 'antd';
+import { Table, Button, Input, Space, Tag, Modal, Form, InputNumber, message, Popconfirm, Tooltip, DatePicker } from 'antd';
 import { PlusOutlined, SearchOutlined, WalletOutlined, EditOutlined, CopyOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import type { StudentItem } from '../../../api/students';
@@ -136,9 +136,10 @@ export default function StudentsPage() {
     fetchData();
   };
 
-  const handleRecharge = async (values: { amount: number; remark?: string }) => {
+  const handleRecharge = async (values: { amount: number; remark?: string; recharge_date?: any }) => {
     if (!rechargeId) return;
-    await rechargeStudent(rechargeId, values.amount, values.remark);
+    const rechargeDate = values.recharge_date ? values.recharge_date.format('YYYY-MM-DD') : undefined;
+    await rechargeStudent(rechargeId, values.amount, values.remark, rechargeDate);
     message.success('充值成功');
     setRechargeOpen(false);
     rechargeForm.resetFields();
@@ -261,6 +262,9 @@ export default function StudentsPage() {
         <Form form={rechargeForm} layout="vertical" onFinish={handleRecharge}>
           <Form.Item name="amount" label="充值金额" rules={[{ required: true, message: '请输入金额' }]}>
             <InputNumber min={0.01} step={0.01} precision={2} style={{ width: '100%' }} prefix="¥" placeholder="0.00" />
+          </Form.Item>
+          <Form.Item name="recharge_date" label="充值日期">
+            <DatePicker style={{ width: '100%' }} placeholder="选择充值日期（默认当天）" />
           </Form.Item>
           <Form.Item name="remark" label="备注">
             <Input.TextArea placeholder="充值备注" rows={2} />

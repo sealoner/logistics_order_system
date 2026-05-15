@@ -6,6 +6,7 @@ from sqlalchemy import func, extract
 from app.database import get_db
 from app.models.user import User
 from app.models.order import Order
+from app.models.recharge import RechargeRecord
 from app.config import LOW_BALANCE_THRESHOLD
 from app.utils.auth import get_current_user, require_admin
 
@@ -65,8 +66,17 @@ def get_student_stats(
         Order.student_id == student_id, Order.created_at >= month_start
     ).scalar() or 0
 
+    total_recharged = db.query(func.sum(RechargeRecord.amount)).filter(
+        RechargeRecord.student_id == student_id,
+        RechargeRecord.is_canceled == False
+    ).scalar() or 0
+    total_freight = db.query(func.sum(Order.total_cost)).filter(
+        Order.student_id == student_id
+    ).scalar() or 0
+    computed_balance = float(total_recharged) - float(total_freight)
+
     return {
-        "balance": float(student.balance),
+        "balance": round(computed_balance, 2),
         "month_orders": month_orders,
         "month_freight": round(float(month_freight), 2),
         "month_sales": round(float(month_sales), 2),

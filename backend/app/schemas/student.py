@@ -40,6 +40,7 @@ class StudentResponse(BaseModel):
 class RechargeCreate(BaseModel):
     amount: float
     remark: Optional[str] = None
+    recharge_date: Optional[datetime] = None
 
 
 class RechargeResponse(BaseModel):
@@ -49,6 +50,7 @@ class RechargeResponse(BaseModel):
     balance_before: float
     balance_after: float
     remark: Optional[str] = None
+    recharge_date: Optional[datetime] = None
     created_at: datetime
 
     class Config:
@@ -59,6 +61,7 @@ class DeductionResponse(BaseModel):
     id: int
     student_id: int
     order_id: int
+    erp_order_id: Optional[int] = None
     amount: float
     balance_before: float
     balance_after: float

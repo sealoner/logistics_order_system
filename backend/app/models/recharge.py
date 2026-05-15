@@ -15,6 +15,7 @@ class RechargeRecord(Base):
     balance_before: Mapped[float] = mapped_column(Numeric(10, 2), nullable=False)
     balance_after: Mapped[float] = mapped_column(Numeric(10, 2), nullable=False)
     remark: Mapped[Optional[str]] = mapped_column(Text)
+    recharge_date: Mapped[Optional[datetime]] = mapped_column(DateTime)
     is_canceled: Mapped[bool] = mapped_column(default=False)
     canceled_at: Mapped[Optional[datetime]] = mapped_column(DateTime)
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.utcnow)

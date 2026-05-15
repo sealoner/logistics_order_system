@@ -41,8 +41,8 @@ export async function toggleStudent(id: number) {
   return data;
 }
 
-export async function rechargeStudent(id: number, amount: number, remark?: string) {
-  const { data } = await client.post(`/students/${id}/recharges`, { amount, remark });
+export async function rechargeStudent(id: number, amount: number, remark?: string, recharge_date?: string) {
+  const { data } = await client.post(`/students/${id}/recharges`, { amount, remark, recharge_date });
   return data;
 }
 

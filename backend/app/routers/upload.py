@@ -13,6 +13,7 @@ from app.utils.auth import require_admin, hash_password
 from app.services.excel_parser import validate_fields, parse_erp_row, parse_logistics_row, read_excel_to_dicts
 from app.services.name_extractor import extract_student_name
 from app.services.deduction import deduct_order_cost
+from app.models.deduction import CostDeduction
 from app.utils.pinyin import generate_username
 from app.config import ERP_REQUIRED_FIELDS, LOGISTICS_REQUIRED_FIELDS
 
@@ -281,17 +282,18 @@ def confirm_logistics(
         grouped_by_lid[item.logistics_id].append(item)
 
     for lid, items in grouped_by_lid.items():
-        # 获取原始订单
         original_order = db.query(Order).filter(Order.id == items[0].order_id).first()
         if not original_order:
             continue
 
-        # 计算平均净销售额
+        student = db.query(User).filter(User.id == original_order.student_id).first()
+
         original_balance = float(original_order.balance_amount or 0)
         item_count = len(items)
         avg_balance = round(original_balance / item_count, 2)
 
-        # 处理第一条数据（更新现有订单）
+        old_total_cost = float(original_order.total_cost)
+
         first_item = items[0]
         if first_item.weight is not None:
             original_order.gross_weight = first_item.weight
@@ -305,12 +307,23 @@ def confirm_logistics(
             original_order.channel = first_item.channel_name
         if first_item.tracking_no:
             original_order.tracking_no = first_item.tracking_no
-        
+
         original_order.balance_amount = avg_balance
         original_order.total_cost = (original_order.freight or 0) + (original_order.service_fee or 0) + (original_order.packing_fee or 0)
+        new_total_cost = float(original_order.total_cost)
+
+        if student and old_total_cost != new_total_cost:
+            existing_deduction = db.query(CostDeduction).filter(
+                CostDeduction.order_id == original_order.id
+            ).first()
+            cost_diff = new_total_cost - old_total_cost
+            student.balance = float(student.balance) - cost_diff
+            if existing_deduction:
+                existing_deduction.amount = new_total_cost
+                existing_deduction.balance_after = float(student.balance)
+
         updated += 1
 
-        # 处理剩余的数据（创建新订单）
         for item in items[1:]:
             new_order = Order(
                 erp_order_id=original_order.erp_order_id,
@@ -329,6 +342,9 @@ def confirm_logistics(
                 image_url=original_order.image_url,
             )
             db.add(new_order)
+            db.flush()
+            if student and new_order.total_cost > 0:
+                deduct_order_cost(db, student, new_order)
             created += 1
 
     batch.success_rows = updated + created

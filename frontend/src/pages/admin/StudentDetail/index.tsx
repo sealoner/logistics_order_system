@@ -24,8 +24,16 @@ export default function StudentDetailPage() {
           <Descriptions.Item label="账号">{student.username}</Descriptions.Item>
           <Descriptions.Item label="手机号">{student.phone || '-'}</Descriptions.Item>
           <Descriptions.Item label="备注">{student.remark || '-'}</Descriptions.Item>
+          <Descriptions.Item label="运费总额">
+            <span style={{ color: '#ff4d4f' }}>¥{student.total_freight?.toFixed(2) || '0.00'}</span>
+          </Descriptions.Item>
+          <Descriptions.Item label="已充值运费">
+            <span style={{ color: '#52c41a' }}>¥{student.total_recharged?.toFixed(2) || '0.00'}</span>
+          </Descriptions.Item>
           <Descriptions.Item label="运费余额">
-            <Tag color={student.balance < 50 ? 'red' : 'green'} style={{ fontSize: 16 }}>¥{student.balance.toFixed(2)}</Tag>
+            <Tag color={student.freight_balance < 0 ? 'red' : 'green'} style={{ fontSize: 16 }}>
+              ¥{student.freight_balance?.toFixed(2) || '0.00'}
+            </Tag>
           </Descriptions.Item>
           <Descriptions.Item label="订单数">{student.order_count}</Descriptions.Item>
         </Descriptions>
@@ -73,7 +81,7 @@ function RechargeTab({ studentId }: { studentId: number }) {
   };
 
   const columns = [
-    { title: '时间', dataIndex: 'created_at', key: 'created_at', render: (v: string) => new Date(v).toLocaleString() },
+    { title: '充值日期', dataIndex: 'recharge_date', key: 'recharge_date', render: (v: string) => v || '-' },
     { 
       title: '金额', 
       dataIndex: 'amount', 
@@ -122,11 +130,10 @@ function DeductionTab({ studentId }: { studentId: number }) {
   useEffect(() => { setLoading(true); getDeductions(studentId).then(res => setData(res.items)).finally(() => setLoading(false)); }, [studentId]);
 
   const columns = [
-    { title: '时间', dataIndex: 'created_at', key: 'created_at', render: (v: string) => new Date(v).toLocaleString() },
     { title: '金额', dataIndex: 'amount', key: 'amount', render: (v: number) => <span style={{ color: '#ff4d4f' }}>-¥{v.toFixed(2)}</span> },
     { title: '扣费前', dataIndex: 'balance_before', key: 'balance_before', render: (v: number) => `¥${v.toFixed(2)}` },
     { title: '扣费后', dataIndex: 'balance_after', key: 'balance_after', render: (v: number) => `¥${v.toFixed(2)}` },
-    { title: '订单ID', dataIndex: 'order_id', key: 'order_id' },
+    { title: '订单ID', dataIndex: 'erp_order_id', key: 'erp_order_id', render: (v: any) => v != null ? v : '-' },
   ];
 
   return <Table dataSource={data} columns={columns} rowKey="id" loading={loading} pagination={{ pageSize: 10 }} />;

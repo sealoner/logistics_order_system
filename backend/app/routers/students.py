@@ -207,6 +207,7 @@ def recharge(
         balance_before=balance_before,
         balance_after=balance_after,
         remark=req.remark,
+        recharge_date=req.recharge_date,
     )
     db.add(record)
     db.commit()
@@ -269,7 +270,19 @@ def get_deductions(
 ):
     if current_user.role != "admin" and current_user.id != student_id:
         raise HTTPException(status_code=403, detail="无权访问")
-    query = db.query(CostDeduction).filter(CostDeduction.student_id == student_id)
+    query = db.query(CostDeduction, Order.erp_order_id).join(
+        Order, CostDeduction.order_id == Order.id, isouter=True
+    ).filter(CostDeduction.student_id == student_id)
     total = query.count()
-    records = query.order_by(CostDeduction.created_at.desc()).offset((page - 1) * page_size).limit(page_size).all()
-    return {"total": total, "page": page, "page_size": page_size, "items": records}
+    results = query.order_by(CostDeduction.created_at.desc()).offset((page - 1) * page_size).limit(page_size).all()
+    items = []
+    for d, erp_id in results:
+        items.append(DeductionResponse(
+            id=d.id, student_id=d.student_id, order_id=d.order_id,
+            erp_order_id=erp_id,
+            amount=float(d.amount),
+            balance_before=float(d.balance_before),
+            balance_after=float(d.balance_after),
+            created_at=d.created_at,
+        ))
+    return {"total": total, "page": page, "page_size": page_size, "items": items}
