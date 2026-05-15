@@ -8,12 +8,14 @@ class StudentCreate(BaseModel):
     name: str
     phone: Optional[str] = None
     remark: Optional[str] = None
+    password: Optional[str] = None
 
 
 class StudentUpdate(BaseModel):
     name: Optional[str] = None
     phone: Optional[str] = None
     remark: Optional[str] = None
+    password: Optional[str] = None
 
 
 class StudentResponse(BaseModel):

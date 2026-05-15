@@ -1,3 +1,6 @@
+import random
+import string
+
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from datetime import datetime
@@ -13,7 +16,7 @@ from app.schemas.student import (
     RechargeResponse, DeductionResponse,
 )
 from app.utils.auth import get_current_user, require_admin, hash_password
-from app.utils.pinyin import generate_username
+from app.utils.pinyin import generate_username, name_to_pinyin
 from app.config import LOW_BALANCE_THRESHOLD
 
 router = APIRouter(prefix="/api/students", tags=["students"])
@@ -57,6 +60,20 @@ def list_students(
     return {"total": total, "page": page, "page_size": page_size, "items": result}
 
 
+@router.get("/generate-credentials")
+def generate_credentials(
+    name: str = Query(..., min_length=1),
+    db: Session = Depends(get_db),
+    _: User = Depends(require_admin),
+):
+    pinyin_str = name_to_pinyin(name)
+    random_suffix = ''.join(random.choices(string.digits, k=4))
+    password = pinyin_str + random_suffix
+    existing_usernames = {u.username for u in db.query(User.username).all()}
+    username = generate_username(name, existing_usernames)
+    return {"username": username, "password": password}
+
+
 @router.post("", response_model=StudentResponse)
 def create_student(
     req: StudentCreate,
@@ -66,10 +83,17 @@ def create_student(
     existing_usernames = {u.username for u in db.query(User.username).all()}
     username = generate_username(req.name, existing_usernames)
 
+    if req.password:
+        password = req.password
+    else:
+        pinyin_str = name_to_pinyin(req.name)
+        random_suffix = ''.join(random.choices(string.digits, k=4))
+        password = pinyin_str + random_suffix
+
     student = User(
         name=req.name,
         username=username,
-        password_hash=hash_password(username),
+        password_hash=hash_password(password),
         role="student",
         phone=req.phone,
         remark=req.remark,
@@ -127,13 +151,24 @@ def update_student(
         student.phone = req.phone
     if req.remark is not None:
         student.remark = req.remark
+    if req.password is not None and req.password.strip():
+        student.password_hash = hash_password(req.password.strip())
     db.commit()
     db.refresh(student)
     order_count = db.query(func.count(Order.id)).filter(Order.student_id == student.id).scalar()
+    total_freight = db.query(func.sum(Order.total_cost)).filter(Order.student_id == student.id).scalar() or 0
+    total_recharged = db.query(func.sum(RechargeRecord.amount)).filter(
+        RechargeRecord.student_id == student.id,
+        RechargeRecord.is_canceled == False
+    ).scalar() or 0
+    freight_balance = float(total_recharged) - float(total_freight)
     return StudentResponse(
         id=student.id, name=student.name, username=student.username, role=student.role,
         phone=student.phone, remark=student.remark, balance=float(student.balance),
         is_active=student.is_active, created_at=student.created_at, order_count=order_count or 0,
+        total_freight=float(total_freight),
+        total_recharged=float(total_recharged),
+        freight_balance=freight_balance,
     )
 
 

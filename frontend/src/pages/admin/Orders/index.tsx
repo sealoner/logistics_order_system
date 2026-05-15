@@ -67,7 +67,18 @@ export default function OrdersPage() {
 
   useEffect(() => { fetchData(); }, [page, filters]);
 
+  const statusColorMap: Record<string, string> = {
+    '取消': 'default',
+    '已发': 'processing',
+    '找货': 'warning',
+    '送达': 'success',
+  };
+
   const columns = [
+    {
+      title: '图片', dataIndex: 'image_url', key: 'image_url', width: 60,
+      render: (v: string) => v ? <Image src={v} width={32} height={32} style={{ objectFit: 'cover', borderRadius: 4 }} /> : '-',
+    },
     { title: '订单ID', dataIndex: 'erp_order_id', key: 'erp_order_id', width: 110 },
     { title: '学员', dataIndex: 'student_name', key: 'student_name', width: 80 },
     { title: '时间', dataIndex: 'order_time', key: 'order_time', width: 140, render: (v: string) => v ? dayjs(v).format('MM-DD HH:mm') : '-' },
@@ -78,10 +89,20 @@ export default function OrdersPage() {
     { title: '打包费', dataIndex: 'packing_fee', key: 'packing_fee', width: 70, render: (v: number) => `¥${v.toFixed(2)}` },
     { title: '总费用', dataIndex: 'total_cost', key: 'total_cost', width: 80, render: (v: number) => <strong>¥{v.toFixed(2)}</strong> },
     { title: '净销售额', dataIndex: 'balance_amount', key: 'balance_amount', width: 70, render: (v: number) => v != null ? `$${v.toFixed(2)}` : '-' },
-    { title: '状态', dataIndex: 'status', key: 'status', width: 100 },
     {
-      title: '图片', dataIndex: 'image_url', key: 'image_url', width: 60,
-      render: (v: string) => v ? <Image src={v} width={32} height={32} style={{ objectFit: 'cover', borderRadius: 4 }} /> : '-',
+      title: '状态', dataIndex: 'status', key: 'status', width: 80,
+      render: (v: string) => {
+        if (!v) return <Tag>未知</Tag>;
+        const color = statusColorMap[v] || 'cyan';
+        return <Tag color={color}>{v}</Tag>;
+      },
+    },
+    {
+      title: '追踪号', dataIndex: 'tracking_no', key: 'tracking_no', width: 100,
+      render: (v: string) => {
+        if (!v) return <span style={{ color: '#999' }}>暂无</span>;
+        return <a href={`https://t.17track.net/zh-cn#nums=${v}`} target="_blank" rel="noopener noreferrer">{v}</a>;
+      },
     },
   ];
 

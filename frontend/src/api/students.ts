@@ -21,7 +21,7 @@ export async function getStudents(params: { page?: number; page_size?: number; s
   return data;
 }
 
-export async function createStudent(body: { name: string; phone?: string; remark?: string }) {
+export async function createStudent(body: { name: string; phone?: string; remark?: string; password?: string }) {
   const { data } = await client.post('/students', body);
   return data;
 }
@@ -31,7 +31,7 @@ export async function getStudent(id: number) {
   return data;
 }
 
-export async function updateStudent(id: number, body: { name?: string; phone?: string; remark?: string }) {
+export async function updateStudent(id: number, body: { name?: string; phone?: string; remark?: string; password?: string }) {
   const { data } = await client.put(`/students/${id}`, body);
   return data;
 }
@@ -59,4 +59,9 @@ export async function getDeductions(id: number, page = 1, pageSize = 20) {
 export async function cancelRecharge(studentId: number, rechargeId: number) {
   const { data } = await client.post(`/students/${studentId}/recharges/${rechargeId}/cancel`);
   return data;
+}
+
+export async function generateCredentials(name: string) {
+  const { data } = await client.get('/students/generate-credentials', { params: { name } });
+  return data as { username: string; password: string };
 }
